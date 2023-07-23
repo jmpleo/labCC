@@ -1,0 +1,17 @@
+[
+{
+  "directory": "/home/j/proj/labCC/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_WIDGETS_LIB -I/home/j/proj/labCC/build -I/home/j/proj/labCC -I/home/j/proj/labCC/build/labCC_autogen/include -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -fPIC -std=gnu++11 -o CMakeFiles/labCC.dir/labCC_autogen/mocs_compilation.cpp.o -c /home/j/proj/labCC/build/labCC_autogen/mocs_compilation.cpp",
+  "file": "/home/j/proj/labCC/build/labCC_autogen/mocs_compilation.cpp"
+},
+{
+  "directory": "/home/j/proj/labCC/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_WIDGETS_LIB -I/home/j/proj/labCC/build -I/home/j/proj/labCC -I/home/j/proj/labCC/build/labCC_autogen/include -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -fPIC -std=gnu++11 -o CMakeFiles/labCC.dir/main.cpp.o -c /home/j/proj/labCC/main.cpp",
+  "file": "/home/j/proj/labCC/main.cpp"
+},
+{
+  "directory": "/home/j/proj/labCC/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_WIDGETS_LIB -I/home/j/proj/labCC/build -I/home/j/proj/labCC -I/home/j/proj/labCC/build/labCC_autogen/include -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -fPIC -std=gnu++11 -o CMakeFiles/labCC.dir/mainwindow.cpp.o -c /home/j/proj/labCC/mainwindow.cpp",
+  "file": "/home/j/proj/labCC/mainwindow.cpp"
+}
+]
