@@ -2,15 +2,11 @@
 #define CIPHER_H
 
 #include "lfsr.h"
-#include <cstddef>
-#include <cstdint>
-#include <memory>
 
-template<size_t L1, size_t L2>
 class Cipher
 {
 public:
-    Cipher(uint64_t poly1, uint64_t poly2);
+    Cipher(uint64_t poly1, uint64_t poly2, uint64_t l1, uint64_t l2);
     ~Cipher();
 
     //void Enc(char* p, const uint64_t &k1, const uint64_t &k2);
@@ -30,20 +26,7 @@ private:
     LFSR _lfsr2;
 };
 
-
-template<size_t L1, size_t L2>
-Cipher<L1, L2>::Cipher(uint64_t poly1, uint64_t poly2)
-    : _lfsr1(L1, poly1, 0)
-    , _lfsr2(L2, poly2, 0)
-{ }
-
-template<size_t L1, size_t L2>
-Cipher<L1, L2>::~Cipher()
-{ }
-
-
-template<size_t L1, size_t L2>
-inline void Cipher<L1, L2>::EncByte(uint8_t &byte, const uint64_t &k1, const uint64_t &k2)
+inline void Cipher::EncByte(uint8_t &byte, const uint64_t &k1, const uint64_t &k2)
 {
     _lfsr1.reset(k1);
     _lfsr2.reset(k2);
@@ -62,8 +45,7 @@ inline void Cipher<L1, L2>::EncByte(uint8_t &byte, const uint64_t &k1, const uin
     );
 }
 
-template<size_t L1, size_t L2>
-inline void Cipher<L1, L2>::DecByte(uint8_t &byte, const uint64_t &k1, const uint64_t &k2)
+inline void Cipher::DecByte(uint8_t &byte, const uint64_t &k1, const uint64_t &k2)
 {
     _lfsr1.reset(k1);
     _lfsr2.reset(k2);
@@ -82,25 +64,21 @@ inline void Cipher<L1, L2>::DecByte(uint8_t &byte, const uint64_t &k1, const uin
     );
 }
 
-
-template<size_t L1, size_t L2>
-inline void Cipher<L1, L2>::g(uint8_t &byte, const uint64_t &gamma)
+inline void Cipher::g(uint8_t &byte, const uint64_t &gamma)
 {
 #define phi(x) (((x) ^ ( ((x) >>2) & ((x) >>3) & ((x) >>7) )) &1u )
     byte = ((byte >>1) &0x7Fu)
          ^ ((phi(byte) ^ (gamma &1u)) <<7);
 }
 
-template<size_t L1, size_t L2>
-inline void Cipher<L1, L2>::inv_g(uint8_t &byte, const uint64_t &gamma)
+inline void Cipher::inv_g(uint8_t &byte, const uint64_t &gamma)
 {
     byte = ((byte <<1) &0xFEu)
          ^ phi(((byte <<1) &0xFF) ^ ((byte >>7) &1u))
          ^ (gamma &1u);
 }
 
-template<size_t L1, size_t L2>
-inline void Cipher<L1, L2>::G(uint8_t &byte, const uint64_t &gammas)
+inline void Cipher::G(uint8_t &byte, const uint64_t &gammas)
 {
     g(byte, gammas >>0); g(byte, gammas >>1);
     g(byte, gammas >>2); g(byte, gammas >>3);
@@ -109,8 +87,7 @@ inline void Cipher<L1, L2>::G(uint8_t &byte, const uint64_t &gammas)
     g(byte, gammas >>8); g(byte, gammas >>9);
 }
 
-template<size_t L1, size_t L2>
-inline void Cipher<L1, L2>::inv_G(uint8_t &byte, const uint64_t &gammas)
+inline void Cipher::inv_G(uint8_t &byte, const uint64_t &gammas)
 {
     inv_g(byte, gammas >>9); inv_g(byte, gammas >>8);
     inv_g(byte, gammas >>7); inv_g(byte, gammas >>6);
@@ -118,7 +95,5 @@ inline void Cipher<L1, L2>::inv_G(uint8_t &byte, const uint64_t &gammas)
     inv_g(byte, gammas >>3); inv_g(byte, gammas >>2);
     inv_g(byte, gammas >>1); inv_g(byte, gammas >>0);
 }
-
-
 
 #endif
