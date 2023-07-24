@@ -29,12 +29,22 @@ private slots:
 
     void on_decipherButton_clicked();
 
-    void on_decryptButton_clicked();
-
     void on_plainTextEdit_textChanged();
+
+    void on_r1SeedLineEdit_textChanged(const QString &arg1);
+
+    void on_r2SeedLineEdit_textChanged(const QString &arg1);
+
+    void on_cipherTextBrowser_textChanged();
+
+    void on_possibleGammaButton_clicked();
+
+    void on_plainTextBrowser_textChanged();
 
 private:
     std::string hexGenerate(int bitLen);
+    std::string toHex(std::string other);
+    std::string fromHex(std::string hexStr);
 
 private:
     Ui::MainWindow *ui;

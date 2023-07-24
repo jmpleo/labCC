@@ -15,9 +15,9 @@ public:
     ~LFSR();
 
     uint64_t next();
-    void reset(uint64_t seed);
+    void setState(uint64_t seed);
 
-private:
+//private:
     uint64_t _size;
     uint64_t _poly;
     uint64_t _state;

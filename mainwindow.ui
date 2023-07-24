@@ -33,7 +33,7 @@
      <string/>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="setting">
      <attribute name="title">
@@ -95,76 +95,12 @@
             <bool>true</bool>
            </property>
            <property name="placeholderText">
-            <string>0x1155105</string>
+            <string>Хар-ий многочлен ЛРП в 16 виде</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QPushButton" name="r1PolyGenButton">
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="Button">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>143</red>
-                 <green>240</green>
-                 <blue>164</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="Highlight">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>143</red>
-                 <green>240</green>
-                 <blue>164</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="Button">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>143</red>
-                 <green>240</green>
-                 <blue>164</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="Highlight">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>143</red>
-                 <green>240</green>
-                 <blue>164</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="Button">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>143</red>
-                 <green>240</green>
-                 <blue>164</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="Highlight">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>145</red>
-                 <green>145</green>
-                 <blue>145</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
            <property name="text">
             <string>Сгенерировать</string>
            </property>
@@ -183,7 +119,7 @@
             <number>32</number>
            </property>
            <property name="value">
-            <number>24</number>
+            <number>32</number>
            </property>
           </widget>
          </item>
@@ -196,76 +132,12 @@
             <bool>true</bool>
            </property>
            <property name="placeholderText">
-            <string>0x1155105</string>
+            <string/>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QPushButton" name="r2PolyGenButton">
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="Button">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>143</red>
-                 <green>240</green>
-                 <blue>164</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="Highlight">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>143</red>
-                 <green>240</green>
-                 <blue>164</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="Button">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>143</red>
-                 <green>240</green>
-                 <blue>164</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="Highlight">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>143</red>
-                 <green>240</green>
-                 <blue>164</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="Button">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>143</red>
-                 <green>240</green>
-                 <blue>164</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="Highlight">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>145</red>
-                 <green>145</green>
-                 <blue>145</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
            <property name="text">
             <string>Сгенерировать</string>
            </property>
@@ -274,7 +146,11 @@
         </layout>
        </item>
        <item>
-        <widget class="QTextBrowser" name="logTextBox"/>
+        <widget class="QTextBrowser" name="logTextBox">
+         <property name="placeholderText">
+          <string>Важно! Если длина регистра равна l, то запись многочлена, вообще говоря, будет длиной l+1 бит - старший бит соответствует коэфициенту при x^l. Значения многочленов генерируются как l коэфициентов не учитывая старший. Например, для многочлена x^4 + x^2 + 1 запись многочлена будет равна 0x15. При этом значения, генерируемые для такого регистра будут иметь запись 0x0, 0x1, 0x2, ... 0xF. В связи с этим, если вы укажете значение 0xFF1F для длины регистра равной 4, то такая запись будет подразумевать многочлен 0x1F и соответствующее значение 0xF.</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -354,7 +230,7 @@ p, li { white-space: pre-wrap; }
             <string/>
            </property>
            <property name="text">
-            <string>0x</string>
+            <string/>
            </property>
            <property name="placeholderText">
             <string>Начальное заполнение регистра R1</string>
@@ -363,70 +239,6 @@ p, li { white-space: pre-wrap; }
          </item>
          <item>
           <widget class="QPushButton" name="r1SeedGenButton">
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="Button">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>143</red>
-                 <green>240</green>
-                 <blue>164</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="Highlight">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>143</red>
-                 <green>240</green>
-                 <blue>164</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="Button">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>143</red>
-                 <green>240</green>
-                 <blue>164</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="Highlight">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>143</red>
-                 <green>240</green>
-                 <blue>164</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="Button">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>143</red>
-                 <green>240</green>
-                 <blue>164</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="Highlight">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>145</red>
-                 <green>145</green>
-                 <blue>145</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
            <property name="text">
             <string>Сгенерировать</string>
            </property>
@@ -442,7 +254,7 @@ p, li { white-space: pre-wrap; }
             <string/>
            </property>
            <property name="text">
-            <string>0x</string>
+            <string/>
            </property>
            <property name="placeholderText">
             <string>Начальное заполнение регистра R2</string>
@@ -451,70 +263,6 @@ p, li { white-space: pre-wrap; }
          </item>
          <item>
           <widget class="QPushButton" name="r2SeedGenButton">
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="Button">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>143</red>
-                 <green>240</green>
-                 <blue>164</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="Highlight">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>143</red>
-                 <green>240</green>
-                 <blue>164</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="Button">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>143</red>
-                 <green>240</green>
-                 <blue>164</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="Highlight">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>143</red>
-                 <green>240</green>
-                 <blue>164</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="Button">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>143</red>
-                 <green>240</green>
-                 <blue>164</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="Highlight">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>145</red>
-                 <green>145</green>
-                 <blue>145</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
            <property name="text">
             <string>Сгенерировать</string>
            </property>
@@ -524,77 +272,13 @@ p, li { white-space: pre-wrap; }
        </item>
        <item>
         <widget class="QPushButton" name="encryptButton">
-         <property name="palette">
-          <palette>
-           <active>
-            <colorrole role="Button">
-             <brush brushstyle="SolidPattern">
-              <color alpha="255">
-               <red>255</red>
-               <green>163</green>
-               <blue>72</blue>
-              </color>
-             </brush>
-            </colorrole>
-            <colorrole role="Highlight">
-             <brush brushstyle="SolidPattern">
-              <color alpha="255">
-               <red>143</red>
-               <green>240</green>
-               <blue>164</blue>
-              </color>
-             </brush>
-            </colorrole>
-           </active>
-           <inactive>
-            <colorrole role="Button">
-             <brush brushstyle="SolidPattern">
-              <color alpha="255">
-               <red>255</red>
-               <green>163</green>
-               <blue>72</blue>
-              </color>
-             </brush>
-            </colorrole>
-            <colorrole role="Highlight">
-             <brush brushstyle="SolidPattern">
-              <color alpha="255">
-               <red>143</red>
-               <green>240</green>
-               <blue>164</blue>
-              </color>
-             </brush>
-            </colorrole>
-           </inactive>
-           <disabled>
-            <colorrole role="Button">
-             <brush brushstyle="SolidPattern">
-              <color alpha="255">
-               <red>255</red>
-               <green>163</green>
-               <blue>72</blue>
-              </color>
-             </brush>
-            </colorrole>
-            <colorrole role="Highlight">
-             <brush brushstyle="SolidPattern">
-              <color alpha="255">
-               <red>145</red>
-               <green>145</green>
-               <blue>145</blue>
-              </color>
-             </brush>
-            </colorrole>
-           </disabled>
-          </palette>
-         </property>
          <property name="text">
           <string>Зашифровать</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QTextBrowser" name="ciperTextBrowser">
+        <widget class="QTextBrowser" name="cipherTextBrowser">
          <property name="html">
           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
@@ -684,7 +368,7 @@ p, li { white-space: pre-wrap; }
        <item>
         <layout class="QHBoxLayout" name="decR2Layout">
          <item>
-          <widget class="HexLineEdit" name="decR1LineEdit">
+          <widget class="HexLineEdit" name="decR2SeedLineEdit">
            <property name="inputMask">
             <string/>
            </property>
@@ -697,70 +381,6 @@ p, li { white-space: pre-wrap; }
        </item>
        <item>
         <widget class="QPushButton" name="decipherButton">
-         <property name="palette">
-          <palette>
-           <active>
-            <colorrole role="Button">
-             <brush brushstyle="SolidPattern">
-              <color alpha="255">
-               <red>255</red>
-               <green>163</green>
-               <blue>72</blue>
-              </color>
-             </brush>
-            </colorrole>
-            <colorrole role="Highlight">
-             <brush brushstyle="SolidPattern">
-              <color alpha="255">
-               <red>143</red>
-               <green>240</green>
-               <blue>164</blue>
-              </color>
-             </brush>
-            </colorrole>
-           </active>
-           <inactive>
-            <colorrole role="Button">
-             <brush brushstyle="SolidPattern">
-              <color alpha="255">
-               <red>255</red>
-               <green>163</green>
-               <blue>72</blue>
-              </color>
-             </brush>
-            </colorrole>
-            <colorrole role="Highlight">
-             <brush brushstyle="SolidPattern">
-              <color alpha="255">
-               <red>143</red>
-               <green>240</green>
-               <blue>164</blue>
-              </color>
-             </brush>
-            </colorrole>
-           </inactive>
-           <disabled>
-            <colorrole role="Button">
-             <brush brushstyle="SolidPattern">
-              <color alpha="255">
-               <red>255</red>
-               <green>163</green>
-               <blue>72</blue>
-              </color>
-             </brush>
-            </colorrole>
-            <colorrole role="Highlight">
-             <brush brushstyle="SolidPattern">
-              <color alpha="255">
-               <red>145</red>
-               <green>145</green>
-               <blue>145</blue>
-              </color>
-             </brush>
-            </colorrole>
-           </disabled>
-          </palette>
-         </property>
          <property name="text">
           <string>Расшифровать</string>
          </property>
@@ -845,6 +465,9 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MuseoSansCyrl-500'; font-size:14pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
+           <property name="placeholderText">
+            <string>Hex</string>
+           </property>
           </widget>
          </item>
          <item>
@@ -855,6 +478,9 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MuseoSansCyrl-500'; font-size:14pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="placeholderText">
+            <string>Hex</string>
            </property>
           </widget>
          </item>
@@ -868,81 +494,37 @@ p, li { white-space: pre-wrap; }
         </widget>
        </item>
        <item>
-        <widget class="HexLineEdit" name="lcmLineEdit">
-         <property name="text">
-          <string/>
-         </property>
-         <property name="placeholderText">
-          <string>НОК многочленов F1 и F2</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QSpinBox" name="lcmLenghtSpinBox">
+           <property name="minimum">
+            <number>2</number>
+           </property>
+           <property name="maximum">
+            <number>63</number>
+           </property>
+           <property name="value">
+            <number>40</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="HexLineEdit" name="lcmLineEdit">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="maxLength">
+            <number>32767</number>
+           </property>
+           <property name="placeholderText">
+            <string>НОК многочленов F1 и F2</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
-        <widget class="QPushButton" name="decryptButton">
-         <property name="palette">
-          <palette>
-           <active>
-            <colorrole role="Button">
-             <brush brushstyle="SolidPattern">
-              <color alpha="255">
-               <red>143</red>
-               <green>240</green>
-               <blue>164</blue>
-              </color>
-             </brush>
-            </colorrole>
-            <colorrole role="Highlight">
-             <brush brushstyle="SolidPattern">
-              <color alpha="255">
-               <red>143</red>
-               <green>240</green>
-               <blue>164</blue>
-              </color>
-             </brush>
-            </colorrole>
-           </active>
-           <inactive>
-            <colorrole role="Button">
-             <brush brushstyle="SolidPattern">
-              <color alpha="255">
-               <red>143</red>
-               <green>240</green>
-               <blue>164</blue>
-              </color>
-             </brush>
-            </colorrole>
-            <colorrole role="Highlight">
-             <brush brushstyle="SolidPattern">
-              <color alpha="255">
-               <red>143</red>
-               <green>240</green>
-               <blue>164</blue>
-              </color>
-             </brush>
-            </colorrole>
-           </inactive>
-           <disabled>
-            <colorrole role="Button">
-             <brush brushstyle="SolidPattern">
-              <color alpha="255">
-               <red>143</red>
-               <green>240</green>
-               <blue>164</blue>
-              </color>
-             </brush>
-            </colorrole>
-            <colorrole role="Highlight">
-             <brush brushstyle="SolidPattern">
-              <color alpha="255">
-               <red>145</red>
-               <green>145</green>
-               <blue>145</blue>
-              </color>
-             </brush>
-            </colorrole>
-           </disabled>
-          </palette>
-         </property>
+        <widget class="QPushButton" name="possibleGammaButton">
          <property name="text">
           <string>Найти возможные значения гаммы</string>
          </property>
