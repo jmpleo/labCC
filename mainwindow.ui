@@ -20,20 +20,38 @@
    <string>Шифр Колонной Замены</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="minimumSize">
+    <size>
+     <width>800</width>
+     <height>600</height>
+    </size>
+   </property>
    <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
       <x>0</x>
       <y>0</y>
+      <width>1200</width>
+      <height>800</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
       <width>800</width>
       <height>600</height>
-     </rect>
+     </size>
     </property>
     <property name="accessibleName">
      <string/>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="setting">
      <attribute name="title">
@@ -79,7 +97,7 @@
             <number>2</number>
            </property>
            <property name="maximum">
-            <number>32</number>
+            <number>63</number>
            </property>
            <property name="value">
             <number>24</number>
@@ -116,7 +134,7 @@
             <number>2</number>
            </property>
            <property name="maximum">
-            <number>32</number>
+            <number>63</number>
            </property>
            <property name="value">
             <number>32</number>
@@ -417,7 +435,7 @@ p, li { white-space: pre-wrap; }
         <x>0</x>
         <y>0</y>
         <width>791</width>
-        <height>561</height>
+        <height>221</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -425,17 +443,54 @@ p, li { white-space: pre-wrap; }
         <number>10</number>
        </property>
        <property name="leftMargin">
-        <number>20</number>
+        <number>10</number>
        </property>
        <property name="topMargin">
-        <number>20</number>
+        <number>10</number>
        </property>
        <property name="rightMargin">
-        <number>20</number>
+        <number>10</number>
        </property>
        <property name="bottomMargin">
-        <number>20</number>
+        <number>10</number>
        </property>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QLabel" name="label_9">
+           <property name="text">
+            <string>Длина эквивалентного регистра:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="lcmLenghtSpinBox">
+           <property name="minimum">
+            <number>2</number>
+           </property>
+           <property name="maximum">
+            <number>300</number>
+           </property>
+           <property name="value">
+            <number>40</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_3">
          <item>
@@ -486,43 +541,33 @@ p, li { white-space: pre-wrap; }
          </item>
         </layout>
        </item>
-       <item>
-        <widget class="QLabel" name="label_8">
-         <property name="text">
-          <string>Эквивалентный регистр</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <widget class="QSpinBox" name="lcmLenghtSpinBox">
-           <property name="minimum">
-            <number>2</number>
-           </property>
-           <property name="maximum">
-            <number>63</number>
-           </property>
-           <property name="value">
-            <number>40</number>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="HexLineEdit" name="lcmLineEdit">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="maxLength">
-            <number>32767</number>
-           </property>
-           <property name="placeholderText">
-            <string>НОК многочленов F1 и F2</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="verticalLayoutWidget_5">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>225</y>
+        <width>791</width>
+        <height>341</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="spacing">
+        <number>10</number>
+       </property>
+       <property name="leftMargin">
+        <number>10</number>
+       </property>
+       <property name="topMargin">
+        <number>10</number>
+       </property>
+       <property name="rightMargin">
+        <number>10</number>
+       </property>
+       <property name="bottomMargin">
+        <number>10</number>
+       </property>
        <item>
         <widget class="QPushButton" name="possibleGammaButton">
          <property name="text">

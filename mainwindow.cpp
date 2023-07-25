@@ -30,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
     on_r1PolyGenButton_clicked();
     on_r2PolyGenButton_clicked();
     on_r1SeedGenButton_clicked();
@@ -45,25 +46,33 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_r1PolyGenButton_clicked()
 {
-    ui->r1PolyLineEdit->setText(QString::fromStdString(hexGenerate(ui->r1LenghtSpinBox->value())));
+    ui->r1PolyLineEdit->setText(
+            QString::fromStdString(
+                hexGenerate(ui->r1LenghtSpinBox->value())));
 }
 
 
 void MainWindow::on_r2PolyGenButton_clicked()
 {
-    ui->r2PolyLineEdit->setText(QString::fromStdString(hexGenerate(ui->r2LenghtSpinBox->value())));
+    ui->r2PolyLineEdit->setText(
+            QString::fromStdString(
+                hexGenerate(ui->r2LenghtSpinBox->value())));
 }
 
 
 void MainWindow::on_r1SeedGenButton_clicked()
 {
-    ui->r1SeedLineEdit->setText(QString::fromStdString(hexGenerate(ui->r1LenghtSpinBox->value())));
+    ui->r1SeedLineEdit->setText(
+            QString::fromStdString(
+                hexGenerate(ui->r1LenghtSpinBox->value())));
 }
 
 
 void MainWindow::on_r2SeedGenButton_clicked()
 {
-    ui->r2SeedLineEdit->setText(QString::fromStdString(hexGenerate(ui->r2LenghtSpinBox->value())));
+    ui->r2SeedLineEdit->setText(
+            QString::fromStdString(
+                hexGenerate(ui->r2LenghtSpinBox->value())));
 }
 
 
@@ -112,7 +121,6 @@ void MainWindow::on_decipherButton_clicked()
 
     ui->plainTextBrowser->setPlainText(
             QString::fromStdString(std::string(bytes.begin(), bytes.end())));
-
 }
 
 
@@ -137,41 +145,49 @@ void MainWindow::on_r2SeedLineEdit_textChanged(const QString &arg1)
 
 void MainWindow::on_cipherTextBrowser_textChanged()
 {
-    ui->cipherTextEdit->setText(ui->cipherTextBrowser->toPlainText());
+    ui->cipherTextEdit->setText(
+            ui->cipherTextBrowser->toPlainText());
 }
 
 
 void MainWindow::on_possibleGammaButton_clicked()
 {
-    int k = (ui->lcmLenghtSpinBox->value() / 10)     // 43 / 10 = 4
-        + static_cast<int>(ui->lcmLenghtSpinBox->value() % 10 != 0); // 43 % 10 != 0 -> 4+1
+    ui->possibleGammaBrowser->clear();
 
-    QByteArray cipherBytes = QByteArray::fromHex(ui->analysisCipherTextEdit->toPlainText().mid(2).toUtf8());
-    QByteArray plainBytes = QByteArray::fromHex(ui->analysisCipherTextEdit->toPlainText().mid(2).toUtf8());
+    Bytes cipher = Cipher::fromHex(
+            ui->analysisCipherTextEdit->toPlainText().toStdString());
+
+    Bytes plain = Cipher::fromHex(
+            ui->analysisPlainTextEdit->toPlainText().toStdString());
+
+    int i, k = (ui->lcmLenghtSpinBox->value() / 10)
+        + static_cast <int> (ui->lcmLenghtSpinBox->value() % 10 != 0);
 
     auto allPermG = Cipher::computeG();
     std::vector<std::vector<uint64_t>> possibleGammas(k);
 
-    for (int i = 0; i < k; ++i) {
+    for (i = 0; i < k; ++i) {
         for (uint64_t gammas = 0; gammas < allPermG.size(); ++gammas) {
-            if (allPermG[gammas][ plainBytes[i] ] == cipherBytes[i]) {
+            if (allPermG[gammas][ plain[i] ] == cipher[i]) {
                 possibleGammas[i].push_back(gammas);
             }
         }
     }
 
-    QString s;
+    //i = 0;
+    //std::string hexText = Cipher::toHex(
+    //        Bytes(plain.begin(), plain.begin() + k)).substr(2);
     for (auto &forSymbol : possibleGammas) {
+        std::stringstream ss;
         for (auto &gammas : forSymbol) {
-            std::stringstream ss;
-            ss << "0x" << std::hex << std::setfill('0');
-            ss << std::setw(2) << gammas;
-            s.append(QString::fromStdString(ss.str()));
-            s.push_back('\t');
+            ss << "0x" << std::hex << std::setfill('0') << std::setw(2)
+               << gammas << '\t';
         }
-        s.push_back('\n');
+        //ss << "для " << "0x" << hexText.substr(i, 2);
+        //ss << " (" << plain[i++] << ")\n";
+        ss << '\n';
+        ui->possibleGammaBrowser->insertPlainText(QString::fromStdString(ss.str()));
     }
-    ui->possibleGammaBrowser->setText(s);
 }
 
 std::string MainWindow::toHex(const std::string &plainText)
@@ -191,41 +207,7 @@ std::string MainWindow::hexGenerate(int bitLen)
 {
     std::stringstream ss;
     std::uniform_int_distribution<uint64_t> uDist(0, (1ull << bitLen)-1);
-    ss << "0x" << std::hex; //<< std::setfill('0');
-    //ss << std::setw(bitLen / 4) << uDist(RND);
-    ss << uDist(RND);
+    ss << "0x" << std::hex << uDist(RND);
     return ss.str();
 }
-
-
-
-
-/*
-std::string MainWindow::toHex(Cipher::Bytes other)
-{
-    std::stringstream ss;
-    ss << "0x" << std::hex << std::setfill('0');
-
-    for (auto ch : other) {
-        BIN(std::cout << "0b", ch) << " : "
-         << std::hex << static_cast<unsigned int> ( ch ) << std::endl;
-
-        ss << std::setw(2)
-           << static_cast<unsigned int> ( ch );
-    }
-    return ss.str();
-}
-Cipher::Bytes MainWindow::fromHex(std::string hexStr)
-{
-    std::stringstream ss;
-    Cipher::Bytes bytes;
-    for (int i = 2; i < hexStr.size(); i += 2) {
-        uint8_t byte = std::stoi(hexStr.substr(i, 2), nullptr, 16);
-        BIN(std::cout << "0b", byte) << " : " << hexStr.substr(i, 2) << std::endl;
-        bytes.push_back(byte);
-    }
-    return bytes;
-}
-
-*/
 

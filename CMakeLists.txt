@@ -43,11 +43,6 @@ else()
         add_executable(labCC
             ${PROJECT_SOURCES}
         )
-        add_executable(test
-            test.cpp
-            cipher.cpp
-            lfsr.cpp
-        )
     endif()
 endif()
 
