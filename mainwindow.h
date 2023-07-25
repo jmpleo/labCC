@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <cstdint>
+#include "cipher.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -39,12 +40,9 @@ private slots:
 
     void on_possibleGammaButton_clicked();
 
-    void on_plainTextBrowser_textChanged();
-
 private:
-    std::string hexGenerate(int bitLen);
-    std::string toHex(std::string other);
-    std::string fromHex(std::string hexStr);
+    static std::string hexGenerate(int bitLen);
+    static std::string toHex(const std::string &plainText);
 
 private:
     Ui::MainWindow *ui;

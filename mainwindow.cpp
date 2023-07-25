@@ -3,10 +3,13 @@
 #include "cipher.h"
 
 #include <QDebug>
+#include <algorithm>
 #include <cstdint>
 #include <iomanip>
 #include <iostream>
+#include <qchar.h>
 #include <qdebug.h>
+#include <qglobal.h>
 #include <qobjectdefs.h>
 #include <qstringliteral.h>
 #include <qstringview.h>
@@ -16,6 +19,10 @@
 #include <type_traits>
 #include <vector>
 
+using cipher::Cipher;
+using cipher::Bytes;
+using cipher::Byte;
+
 static std::random_device RND;
 
 MainWindow::MainWindow(QWidget *parent)
@@ -23,6 +30,11 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    on_r1PolyGenButton_clicked();
+    on_r2PolyGenButton_clicked();
+    on_r1SeedGenButton_clicked();
+    on_r2SeedGenButton_clicked();
+    ui->plainTextEdit->insertPlainText("Secret Message");
 }
 
 MainWindow::~MainWindow()
@@ -57,7 +69,7 @@ void MainWindow::on_r2SeedGenButton_clicked()
 
 void MainWindow::on_encryptButton_clicked()
 {
-    Cipher cipher(
+    Cipher cip(
         ui->r1PolyLineEdit->text().toUInt(nullptr, 16),
         ui->r2PolyLineEdit->text().toUInt(nullptr, 16),
         ui->r1LenghtSpinBox->value(),
@@ -67,36 +79,40 @@ void MainWindow::on_encryptButton_clicked()
     uint64_t k1 = ui->r1SeedLineEdit->text().toUInt(nullptr, 16);
     uint64_t k2 = ui->r2SeedLineEdit->text().toUInt(nullptr, 16);
 
-    QByteArray bytes = ui->plainTextEdit->toPlainText().toUtf8();
+    Bytes bytes = Cipher::fromHex(
+            ui->hexPlainTextBrowser->toPlainText().toStdString());
 
     ui->cipherTextBrowser->setText(
             QString::fromStdString(
-                toHex( cipher.Enc(bytes, bytes.size(), k1, k2) )));
+                Cipher::toHex( cip.Enc(bytes, k1, k2) )));
 }
+
 
 
 void MainWindow::on_decipherButton_clicked()
 {
-    Cipher cipher(
-        ui->r2PolyLineEdit->text().toUInt(nullptr, 16),
+    Cipher cip(
+        ui->r1PolyLineEdit->text().toUInt(nullptr, 16),
         ui->r2PolyLineEdit->text().toUInt(nullptr, 16),
         ui->r1LenghtSpinBox->value(),
         ui->r2LenghtSpinBox->value()
     );
 
-    uint64_t k1 = ui->r1SeedLineEdit->text().toUInt(nullptr, 16);
-    uint64_t k2 = ui->r2SeedLineEdit->text().toUInt(nullptr, 16);
+    uint64_t k1 = ui->decR1SeedLineEdit->text().toUInt(nullptr, 16);
+    uint64_t k2 = ui->decR2SeedLineEdit->text().toUInt(nullptr, 16);
 
-//    std::string bytes = fromHex(
-//        ui->cipherTextEdit->toPlainText().toUtf8().toStdString());
-    QByteArray bytes = QByteArray::fromHex(
-        ui->cipherTextEdit->toPlainText().mid(2).toUtf8());
+    Bytes bytes = Cipher::fromHex(
+            ui->cipherTextEdit->toPlainText().toStdString());
 
-    qDebug() << bytes;
+    bytes = cip.Dec(bytes, k1, k2);
 
-    ui->plainTextBrowser->setText(
+    ui->hexPlainTextBrowser_2->setPlainText(
             QString::fromStdString(
-                cipher.Dec(bytes.data(), bytes.size(), k1, k2)));
+                Cipher::toHex( bytes )));
+
+    ui->plainTextBrowser->setPlainText(
+            QString::fromStdString(std::string(bytes.begin(), bytes.end())));
+
 }
 
 
@@ -106,18 +122,6 @@ void MainWindow::on_plainTextEdit_textChanged()
             QString::fromStdString(
                 toHex(ui->plainTextEdit->toPlainText().toStdString())));
 }
-
-
-std::string MainWindow::hexGenerate(int bitLen)
-{
-    std::stringstream ss;
-    std::uniform_int_distribution<uint64_t> uDist(0, (1ull << bitLen)-1);
-    ss << "0x" << std::hex; //<< std::setfill('0');
-    //ss << std::setw(bitLen / 4) << uDist(RND);
-    ss << uDist(RND);
-    return ss.str();
-}
-
 
 void MainWindow::on_r1SeedLineEdit_textChanged(const QString &arg1)
 {
@@ -170,34 +174,58 @@ void MainWindow::on_possibleGammaButton_clicked()
     ui->possibleGammaBrowser->setText(s);
 }
 
-
-void MainWindow::on_plainTextBrowser_textChanged()
+std::string MainWindow::toHex(const std::string &plainText)
 {
-    ui->hexPlainTextBrowser_2->setPlainText(
-            QString::fromStdString(
-                toHex( ui->plainTextBrowser->toPlainText().toStdString() )));
+    std::stringstream ss;
+    ss << "0x" << std::hex << std::setfill('0');
+
+    for (auto ch : plainText) {
+        ss << std::setw(2)
+           << static_cast <unsigned int> (
+                static_cast<unsigned char> (ch));
+    }
+    return ss.str();
 }
 
-std::string MainWindow::toHex(std::string other)
+std::string MainWindow::hexGenerate(int bitLen)
+{
+    std::stringstream ss;
+    std::uniform_int_distribution<uint64_t> uDist(0, (1ull << bitLen)-1);
+    ss << "0x" << std::hex; //<< std::setfill('0');
+    //ss << std::setw(bitLen / 4) << uDist(RND);
+    ss << uDist(RND);
+    return ss.str();
+}
+
+
+
+
+/*
+std::string MainWindow::toHex(Cipher::Bytes other)
 {
     std::stringstream ss;
     ss << "0x" << std::hex << std::setfill('0');
 
     for (auto ch : other) {
+        BIN(std::cout << "0b", ch) << " : "
+         << std::hex << static_cast<unsigned int> ( ch ) << std::endl;
+
         ss << std::setw(2)
-           << static_cast<unsigned int>(static_cast<unsigned char>(ch));
+           << static_cast<unsigned int> ( ch );
     }
     return ss.str();
 }
-
-std::string MainWindow::fromHex(std::string hexStr)
+Cipher::Bytes MainWindow::fromHex(std::string hexStr)
 {
-    std::stringstream ss(hexStr.substr(2));
-    std::string bytes;
+    std::stringstream ss;
+    Cipher::Bytes bytes;
     for (int i = 2; i < hexStr.size(); i += 2) {
         uint8_t byte = std::stoi(hexStr.substr(i, 2), nullptr, 16);
+        BIN(std::cout << "0b", byte) << " : " << hexStr.substr(i, 2) << std::endl;
         bytes.push_back(byte);
     }
     return bytes;
 }
+
+*/
 

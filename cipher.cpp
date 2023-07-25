@@ -1,59 +1,74 @@
 #include "cipher.h"
+#include <algorithm>
+#include <cstddef>
 #include <cstdint>
+#include <iomanip>
+#include <sstream>
 #include <vector>
 
+using namespace cipher;
 
 Cipher::Cipher(uint64_t poly1, uint64_t poly2, uint64_t l1, uint64_t l2)
     : _lfsr1(l1, poly1, 0)
     , _lfsr2(l2, poly2, 0)
-{ }
+{
+    std::cout
+        << "s1:" <<_lfsr1._state << " p1:" << _lfsr1._poly << " l1:" << _lfsr1._size
+        << std::endl
+        << "s2:" <<_lfsr2._state << " p2:" << _lfsr2._poly << " l2:" << _lfsr2._size
+        << std::endl;
+
+}
 
 Cipher::~Cipher()
 { }
 
-#define bin(x) (std::cout <<((x>>10) & 1)<< ((x>>9) & 1)<< ((x>>8) & 1)<< ((x>>7) & 1) << ((x>>6) & 1) << ((x>>5) & 1) << ((x>>4) & 1) << ((x>>3) & 1) << ((x>>2) & 1) << ((x>>1) & 1) << ((x) & 1) << std::endl)
-
-std::string Cipher::Enc(
-    const char* bytes, size_t len,
-    const uint64_t &k1,
-    const uint64_t &k2
-)
+Bytes Cipher::Enc(Bytes bytes, const uint64_t &k1, const uint64_t &k2)
 {
     _lfsr1.setState(k1);
     _lfsr2.setState(k2);
 
-    std::string c;
-    std::cout << std::endl;
-    for (size_t i = 0; i < len; ++i) {
-        auto ch = EncByte(bytes[i]);
-        c.push_back( ch );
-        std::cout << i << ".    bytes[i]  = "; bin(bytes[i]);
-        std::cout << "  enc(bytes[i]) = "; bin(ch);
-    }
-    return c;
+    std::for_each(
+        bytes.begin(), bytes.end(),
+            [this](Byte &byte){
+                //BIN(std::cout << "EncByte( ", byte) << " ) = ";
+                std::cout
+                << " s1 = " << _lfsr1._state// HEX(std::cout, _lfsr1._state)
+                << " s2 = " << _lfsr2._state;// HEX(std::cout, _lfsr2._state);
+                HEX(std::cout << " EncByte( ", byte) << " ) = ";
+                byte = EncByte(byte);
+                //BIN(std::cout, byte) << std::endl;
+                HEX(std::cout, byte)
+                << " s1 = " << _lfsr1._state//; HEX(std::cout, _lfsr1._state)
+                << " s2 = " << _lfsr2._state// HEX(std::cout, _lfsr2._state) << std::endl;
+                << std::endl;
+            });
+    return bytes;
 }
 
-std::string Cipher::Dec(
-    const char* bytes, size_t len,
-    const uint64_t &k1,
-    const uint64_t &k2
-)
+Bytes Cipher::Dec(Bytes bytes, const uint64_t &k1, const uint64_t &k2)
 {
     _lfsr1.setState(k1);
     _lfsr2.setState(k2);
 
-    std::string p;
-    std::cout << std::endl;
-    for (int i = len - 1; i >= 0; --i) {
-        auto ch = DecByte( static_cast <unsigned> (bytes[i]));
-        p.push_back( ch );
-        std::cout << i << ".    bytes[i]  = "; bin(static_cast< unsigned > (bytes[i]));
-        std::cout << "  dec(bytes[i]) = "; bin(ch);
-    //p.push_back( DecByte( bytes[i] ));
-    }
-    return p;
+    std::for_each(
+        bytes.begin(), bytes.end(),
+            [this](Byte &byte){
+                //BIN(std::cout << "DecByte( ", byte) << " ) = ";
+                std::cout
+                << " s1 = " << _lfsr1._state//; HEX(std::cout, _lfsr1._state)
+                << " s2 = " << _lfsr2._state;// HEX(std::cout, _lfsr2._state) << std::endl;
+                HEX(std::cout << " DecByte( ", byte) << " ) = ";
+                byte = DecByte(byte);
+                HEX(std::cout, byte)
+                << " s1 = " << _lfsr1._state//; HEX(std::cout, _lfsr1._state)
+                << " s2 = " << _lfsr2._state// HEX(std::cout, _lfsr2._state) << std::endl;
+                << std::endl;
+                //BIN(std::cout, byte) << std::endl;
+            });
+    return bytes;
 }
-uint8_t Cipher::EncByte(uint8_t byte)
+Byte Cipher::EncByte(Byte byte)
 {
     G(byte,
            (_lfsr1.next() ^ _lfsr2.next())
@@ -70,7 +85,7 @@ uint8_t Cipher::EncByte(uint8_t byte)
     return byte;
 }
 
-uint8_t Cipher::DecByte(uint8_t byte)
+Byte Cipher::DecByte(Byte byte)
 {
     inv_G(byte,
            (_lfsr1.next() ^ _lfsr2.next())
@@ -87,21 +102,21 @@ uint8_t Cipher::DecByte(uint8_t byte)
     return byte;
 }
 
-void Cipher::g(uint8_t &byte, const uint64_t &gamma)
+void Cipher::g(Byte &byte, const uint64_t &gamma)
 {
 #define phi(x) (((x) ^ ( ((x) >>2) & ((x) >>3) & ((x) >>7) )) &1u )
     byte = ((byte >>1) &0x7Fu)
          ^ ((phi(byte) ^ (gamma &1u)) <<7);
 }
 
-void Cipher::inv_g(uint8_t &byte, const uint64_t &gamma)
+void Cipher::inv_g(Byte &byte, const uint64_t &gamma)
 {
     byte = ((byte <<1) &0xFEu)
          ^ phi(((byte <<1) &0xFF) ^ ((byte >>7) &1u))
          ^ (gamma &1u);
 }
 
-void Cipher::G(uint8_t &byte, const uint64_t &gammas)
+void Cipher::G(Byte &byte, const uint64_t &gammas)
 {
     g(byte, gammas >>0); g(byte, gammas >>1);
     g(byte, gammas >>2); g(byte, gammas >>3);
@@ -110,7 +125,7 @@ void Cipher::G(uint8_t &byte, const uint64_t &gammas)
     g(byte, gammas >>8); g(byte, gammas >>9);
 }
 
-void Cipher::inv_G(uint8_t &byte, const uint64_t &gammas)
+void Cipher::inv_G(Byte &byte, const uint64_t &gammas)
 {
     inv_g(byte, gammas >>9); inv_g(byte, gammas >>8);
     inv_g(byte, gammas >>7); inv_g(byte, gammas >>6);
@@ -120,17 +135,43 @@ void Cipher::inv_G(uint8_t &byte, const uint64_t &gammas)
 }
 
 
-std::vector<std::vector<uint8_t>> Cipher::computeG()
+std::vector<Bytes> Cipher::computeG()
 {
-    std::vector<std::vector<uint8_t>> allpermG(1 <<10,
-                std::vector<uint8_t>(1 <<8));
+    std::vector<std::vector<Byte>> allpermG(1 <<10,
+                std::vector<Byte>(1 <<8));
 
     for (uint64_t x, gammas = 0; gammas < (1ull <<10); ++gammas) {
         for (x = 0; x < (1ull <<8); ++x) {
-            uint8_t y = x; G(y, gammas);
+            Byte y = x; G(y, gammas);
             allpermG[gammas][x] = y;
         }
     }
 
     return allpermG;
 }
+
+std::string Cipher::toHex(Bytes bytes)
+{
+    std::stringstream ss;
+    ss << "0x" << std::hex << std::setfill('0');
+
+    for (Byte &byte : bytes) {
+        ss << std::setw(2)
+           << static_cast<unsigned int>( byte );
+    }
+    return ss.str();
+}
+
+Bytes Cipher::fromHex(std::string hexStr)
+{
+    Bytes bytes;
+    for (size_t i = 2; i < hexStr.size(); i += 2) {
+        uint8_t byte = std::stoi(hexStr.substr(i, 2), nullptr, 16);
+        bytes.push_back(byte);
+//        BIN(std::cout, byte) << " : " << hexStr.substr(i, 2) << std::endl;
+    }
+    return bytes;
+}
+
+
+

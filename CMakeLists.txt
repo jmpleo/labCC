@@ -43,6 +43,11 @@ else()
         add_executable(labCC
             ${PROJECT_SOURCES}
         )
+        add_executable(test
+            test.cpp
+            cipher.cpp
+            lfsr.cpp
+        )
     endif()
 endif()
 
@@ -57,3 +62,6 @@ set_target_properties(labCC PROPERTIES
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(labCC)
 endif()
+
+
+

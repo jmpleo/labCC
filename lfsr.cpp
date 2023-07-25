@@ -26,7 +26,6 @@ uint64_t LFSR::next()
     while (shuffle) {
         pushed ^= ((shuffle>>=1) &1);
     }
-    //std::cout << _state << " __state__ " << (_state >>1) << "\n\n\n";
     _state = (_state>>1) ^ ((pushed &1) << (_size-1));
     return poped;
 }
