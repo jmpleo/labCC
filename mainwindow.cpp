@@ -20,6 +20,7 @@
 #include <sstream>
 #include <string>
 #include <type_traits>
+#include <unordered_map>
 #include <vector>
 
 using cipher::Cipher;
@@ -44,6 +45,8 @@ MainWindow::MainWindow(QWidget *parent)
     on_r2PolyGenButton_clicked();
     on_r1SeedGenButton_clicked();
     on_r2SeedGenButton_clicked();
+
+    ui->plainTextEdit->append("\ngithub@jmpleo");
 }
 
 MainWindow::~MainWindow()
@@ -165,7 +168,7 @@ void MainWindow::on_cipherTextBrowser_textChanged()
 
 void MainWindow::on_possibleGammaButton_clicked()
 {
-    int i, k = (ui->lcmLenghtSpinBox->value() + 9) / 10;
+    //int i, k = (ui->lcmLenghtSpinBox->value() + 9) / 10;
 
     ui->possibleGammaBrowser->clear();
 
@@ -175,34 +178,32 @@ void MainWindow::on_possibleGammaButton_clicked()
     Bytes plain = Cipher::fromHex(
             ui->analysisPlainTextEdit->toPlainText().toStdString());
 
-    if (plain.size() < k || cipher.size() < k) {
-        return;
-    }
+    //if (plain.size() < k || cipher.size() < k) {
+    //    return;
+    //}
+
+    int i, k = std::min(plain.size(), cipher.size());
 
     auto allPermG = Cipher::computeG();
-    std::vector<std::vector<uint64_t>> possibleGammas(k);
+    std::vector <std::vector<uint64_t>> pullGammas(k);
 
     for (i = 0; i < k; ++i) {
         for (uint64_t gammas = 0; gammas < allPermG.size(); ++gammas) {
-            if (allPermG[gammas][ plain[i] ] == cipher[i]) {
-                possibleGammas[i].push_back(gammas);
+            if (allPermG[ gammas ][ plain[i] ] == cipher[i]) {
+                pullGammas[ i ].push_back(gammas);
             }
         }
     }
 
-    //i = 0;
-    //std::string hexText = Cipher::toHex(
-    //        Bytes(plain.begin(), plain.begin() + k)).substr(2);
-    for (auto &forSymbol : possibleGammas) {
+    for (i = 0; i < k; ++i) {
         std::stringstream ss;
-        for (auto &gammas : forSymbol) {
-            ss << "0x" << std::hex << std::setfill('0') << std::setw(2)
-               << gammas << '\t';
+        ss << Cipher::toHex( { plain [i] } ) << " 🠖 "
+           << Cipher::toHex( { cipher[i] } ) << '\t';
+        for (auto &gammas : pullGammas[i]) {
+            ss << " | 0x" << std::hex << std::setfill('0') << std::setw(3) << gammas;
         }
-        //ss << "для " << "0x" << hexText.substr(i, 2);
-        //ss << " (" << plain[i++] << ")\n";
-        ss << '\n';
-        ui->possibleGammaBrowser->insertPlainText(QString::fromStdString(ss.str()));
+        ss << " |";
+        ui->possibleGammaBrowser->append(QString::fromStdString(ss.str()));
     }
 }
 
@@ -230,20 +231,21 @@ std::string MainWindow::hexGenerate(int bitLen)
 std::string MainWindow::toPrettyPoly(uint64_t bitPoly, int bitLen)
 {
     std::stringstream prettyPoly;
-    constexpr const char * degStyleSheet =
-        "font-size:16pt;\
+    constexpr const char* degSpan =
+        "<span style='font-size:16pt;\
          font-weight:600;\
          color:#8ff0a4;\
-         vertical-align:super;";
+         vertical-align:super;'>";
+    constexpr const char* endSpan = "</span>";
 
     char x = 'x';
     int deg = bitLen;
 
-    prettyPoly << x << "<span style=\"" << degStyleSheet << "\">" << deg << "</span>";
+    prettyPoly << x << degSpan << deg << endSpan;
 
     while (--deg, deg) {
         if ((bitPoly >>deg) & 1) {
-            prettyPoly << " + " << x << "<span style=\"" << degStyleSheet << "\">" << deg << "</span>";
+            prettyPoly << " + " << x << degSpan << deg << endSpan;
         }
     }
 
