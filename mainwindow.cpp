@@ -231,15 +231,23 @@ std::string MainWindow::hexGenerate(int bitLen)
 std::string MainWindow::toPrettyPoly(uint64_t bitPoly, int bitLen)
 {
     std::stringstream prettyPoly;
-    char x = 'x', pow = '^';
+    constexpr const char * degStyleSheet =
+        "font-size:16pt;\
+         font-weight:600;\
+         color:#8ff0a4;\
+         vertical-align:super;";
+
+    char x = 'x';
     int deg = bitLen;
 
-    prettyPoly << x << pow << deg;
+    prettyPoly << x << "<span style=\"" << degStyleSheet << "\">" << deg << "</span>";
+
     while (--deg, deg) {
         if ((bitPoly >>deg) & 1) {
-            prettyPoly << " + " << x << pow << deg;
+            prettyPoly << " + " << x << "<span style=\"" << degStyleSheet << "\">" << deg << "</span>";
         }
     }
+
     if ((bitPoly & 1) == 1) {
         prettyPoly << " + 1";
     }
@@ -278,7 +286,7 @@ void MainWindow::on_r2PolyLineEdit_textChanged(const QString &arg1)
 void MainWindow::on_decR1SeedLineEdit_textChanged(const QString &arg1)
 {
     if ((arg1.size() - 2) * 4 > ui->r1LenghtSpinBox->value()) {
-        ui->decR2SeedLineEdit->setText(
+        ui->decR1SeedLineEdit->setText(
                 "0x" + arg1.right((ui->r1LenghtSpinBox->value() + 3) / 4));
     }
 }
