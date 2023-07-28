@@ -44,7 +44,6 @@ MainWindow::MainWindow(QWidget *parent)
     on_r2PolyGenButton_clicked();
     on_r1SeedGenButton_clicked();
     on_r2SeedGenButton_clicked();
-    ui->plainTextEdit->insertPlainText("Secret Message");
 }
 
 MainWindow::~MainWindow()
