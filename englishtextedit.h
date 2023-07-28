@@ -32,7 +32,8 @@ protected:
             QTextEdit::keyPressEvent(event);
         }
         else {
-            event->ignore();
+            QTextEdit::keyPressEvent(event);
+            //event->ignore();
         }
     }
 

@@ -40,7 +40,16 @@ private slots:
 
     void on_possibleGammaButton_clicked();
 
+    void on_r1PolyLineEdit_textChanged(const QString &arg1);
+
+    void on_r2PolyLineEdit_textChanged(const QString &arg1);
+
+    void on_decR1SeedLineEdit_textChanged(const QString &arg1);
+
+    void on_decR2SeedLineEdit_textChanged(const QString &arg1);
+
 private:
+    static std::string toPrettyPoly(uint64_t bitPoly, int bitLen);
     static std::string hexGenerate(int bitLen);
     static std::string toHex(const std::string &plainText);
 

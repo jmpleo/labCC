@@ -60,3 +60,40 @@ endif()
 
 
 
+#
+#
+#cmake_minimum_required(VERSION 3.5)
+#
+#project(labCC)
+#
+## Настройка кросс-компилятора
+#set(CMAKE_SYSTEM_NAME Windows)
+#set(CMAKE_C_COMPILER x86_64-w64-mingw32-gcc)
+#set(CMAKE_CXX_COMPILER x86_64-w64-mingw32-g++)
+#set(CMAKE_FIND_ROOT_PATH /usr/x86_64-w64-mingw32)
+#
+## Настройка сборки
+#set(CMAKE_CXX_STANDARD 11)
+#set(CMAKE_CXX_STANDARD_REQUIRED ON)
+#set(CMAKE_INCLUDE_CURRENT_DIR ON)
+#set(CMAKE_AUTOUIC ON)
+#set(CMAKE_AUTOMOC ON)
+#set(CMAKE_AUTORCC ON)
+#
+#find_package(Qt5 COMPONENTS Widgets REQUIRED)
+#
+#set(SOURCES
+#        main.cpp
+#        mainwindow.cpp
+#        mainwindow.h
+#        mainwindow.ui
+#        cipher.cpp
+#        lfsr.cpp
+#)
+#
+#add_executable(labCC WIN32 ${SOURCES})
+#
+#target_link_libraries(labCC Qt5::Widgets)
+#
+## Настройка установки
+#install(TARGETS labCC DESTINATION bin)
