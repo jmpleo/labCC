@@ -11,8 +11,14 @@ public:
     explicit HexTextEdit(QWidget *parent = nullptr)
         : QTextEdit(parent)
     { }
+    QTextEdit::
 
 protected:
+    void textChanged() override
+    {
+
+    }
+
     void keyPressEvent(QKeyEvent *event) override
     {
         if ((event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9)

@@ -5,9 +5,12 @@
 #include <QDebug>
 #include <algorithm>
 #include <complex>
+#include <cstddef>
 #include <cstdint>
 #include <iomanip>
 #include <iostream>
+#include <ostream>
+#include <qabstractscrollarea.h>
 #include <qchar.h>
 #include <qdebug.h>
 #include <qglobal.h>
@@ -46,7 +49,7 @@ MainWindow::MainWindow(QWidget *parent)
     on_r1SeedGenButton_clicked();
     on_r2SeedGenButton_clicked();
 
-    ui->plainTextEdit->append("\ngithub@jmpleo");
+    ui->plainTextEdit->textChanged();
 }
 
 MainWindow::~MainWindow()
@@ -103,6 +106,8 @@ void MainWindow::on_encryptButton_clicked()
                 Cipher::toHex( cip.Enc(bytes, k1, k2) )));
 }
 
+
+void MainWindow::o
 
 
 void MainWindow::on_decipherButton_clicked()
@@ -165,6 +170,11 @@ void MainWindow::on_cipherTextBrowser_textChanged()
             ui->cipherTextBrowser->toPlainText());
 }
 
+inline std::ostream& colorSpan(std::ostream& ss, const std::string& s)
+{
+    ss << "<span style='color:#8ff0a4;'>" << s << "</span>";
+    return ss;
+}
 
 void MainWindow::on_possibleGammaButton_clicked()
 {
@@ -182,7 +192,7 @@ void MainWindow::on_possibleGammaButton_clicked()
     //    return;
     //}
 
-    int i, k = std::min(plain.size(), cipher.size());
+    size_t i, k = std::min(plain.size(), cipher.size());
 
     auto allPermG = Cipher::computeG();
     std::vector <std::vector<uint64_t>> pullGammas(k);
@@ -197,12 +207,16 @@ void MainWindow::on_possibleGammaButton_clicked()
 
     for (i = 0; i < k; ++i) {
         std::stringstream ss;
-        ss << Cipher::toHex( { plain [i] } ) << " 🠖 "
-           << Cipher::toHex( { cipher[i] } ) << '\t';
+        colorSpan(ss, std::to_string(i + 1)) << ". "
+           << Cipher::toHex( { plain [i] } ) << " 🠖 "
+           << Cipher::toHex( { cipher[i] } )
+           << "\t[ ("; colorSpan(ss, "гамма") << ")";
+
         for (auto &gammas : pullGammas[i]) {
-            ss << " | 0x" << std::hex << std::setfill('0') << std::setw(3) << gammas;
+            ss << " | 0x" << std::hex << std::setfill('0') << std::setw(3)
+               << gammas;
         }
-        ss << " |";
+        ss << " ]";
         ui->possibleGammaBrowser->append(QString::fromStdString(ss.str()));
     }
 }
@@ -245,12 +259,12 @@ std::string MainWindow::toPrettyPoly(uint64_t bitPoly, int bitLen)
 
     while (--deg, deg) {
         if ((bitPoly >>deg) & 1) {
-            prettyPoly << " + " << x << degSpan << deg << endSpan;
+            prettyPoly << " +" << x << degSpan << deg << endSpan;
         }
     }
 
     if ((bitPoly & 1) == 1) {
-        prettyPoly << " + 1";
+        prettyPoly << " +1";
     }
     return prettyPoly.str();
 }
