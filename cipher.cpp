@@ -22,7 +22,8 @@ Bytes Cipher::Enc(Bytes bytes, const uint64_t &k1, const uint64_t &k2)
     _lfsr2.setState(k2);
 
     std::for_each(bytes.begin(), bytes.end(),
-            [this](Byte &byte){ byte = EncByte(byte); });
+        [this](Byte &byte){ byte = EncByte(byte); });
+
     return bytes;
 }
 
@@ -32,7 +33,8 @@ Bytes Cipher::Dec(Bytes bytes, const uint64_t &k1, const uint64_t &k2)
     _lfsr2.setState(k2);
 
     std::for_each(bytes.begin(), bytes.end(),
-            [this](Byte &byte){ byte = DecByte(byte); });
+        [this](Byte &byte){ byte = DecByte(byte); });
+
     return bytes;
 }
 Byte Cipher::EncByte(Byte byte)

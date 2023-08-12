@@ -3,22 +3,19 @@
 
 
 #include <QKeyEvent>
+#include <qapplication.h>
 #include <qtextedit.h>
 #include <qnamespace.h>
+#include <qwindowdefs.h>
 
 class HexTextEdit : public QTextEdit {
 public:
     explicit HexTextEdit(QWidget *parent = nullptr)
         : QTextEdit(parent)
-    { }
-    QTextEdit::
-
-protected:
-    void textChanged() override
     {
-
     }
 
+protected:
     void keyPressEvent(QKeyEvent *event) override
     {
         if ((event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9)

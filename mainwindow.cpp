@@ -37,12 +37,12 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    QRegExp hexExp("^0x[0-9a-fA-F]*$");
 
-    QRegExp hexRegExp("^0x[0-9a-fA-F]*$");
-    ui->r1PolyLineEdit->setValidator(new QRegExpValidator(hexRegExp, this));
-    ui->r2PolyLineEdit->setValidator(new QRegExpValidator(hexRegExp, this));
-    ui->r1SeedLineEdit->setValidator(new QRegExpValidator(hexRegExp, this));
-    ui->r2SeedLineEdit->setValidator(new QRegExpValidator(hexRegExp, this));
+    ui->r1PolyLineEdit->setValidator(new QRegExpValidator(hexExp));
+    ui->r2PolyLineEdit->setValidator(new QRegExpValidator(hexExp));
+    ui->r1SeedLineEdit->setValidator(new QRegExpValidator(hexExp));
+    ui->r2SeedLineEdit->setValidator(new QRegExpValidator(hexExp));
 
     on_r1PolyGenButton_clicked();
     on_r2PolyGenButton_clicked();
@@ -61,28 +61,28 @@ MainWindow::~MainWindow()
 void MainWindow::on_r1PolyGenButton_clicked()
 {
     ui->r1PolyLineEdit->setText(QString::fromStdString(
-                hexGenerate(ui->r1LenghtSpinBox->value())));
+        hexGenerate(ui->r1LenghtSpinBox->value())));
 }
 
 
 void MainWindow::on_r2PolyGenButton_clicked()
 {
     ui->r2PolyLineEdit->setText(QString::fromStdString(
-                hexGenerate(ui->r2LenghtSpinBox->value())));
+        hexGenerate(ui->r2LenghtSpinBox->value())));
 }
 
 
 void MainWindow::on_r1SeedGenButton_clicked()
 {
     ui->r1SeedLineEdit->setText(QString::fromStdString(
-                hexGenerate(ui->r1LenghtSpinBox->value())));
+        hexGenerate(ui->r1LenghtSpinBox->value())));
 }
 
 
 void MainWindow::on_r2SeedGenButton_clicked()
 {
     ui->r2SeedLineEdit->setText(QString::fromStdString(
-                hexGenerate(ui->r2LenghtSpinBox->value())));
+        hexGenerate(ui->r2LenghtSpinBox->value())));
 }
 
 
@@ -99,19 +99,19 @@ void MainWindow::on_encryptButton_clicked()
     uint64_t k2 = std::stoull(ui->r2SeedLineEdit->text().toStdString(), nullptr, 16);
 
     Bytes bytes = Cipher::fromHex(
-            ui->hexPlainTextBrowser->toPlainText().toStdString());
+        ui->hexPlainTextBrowser->toPlainText().toStdString());
 
-    ui->cipherTextBrowser->setText(
-            QString::fromStdString(
-                Cipher::toHex( cip.Enc(bytes, k1, k2) )));
+    ui->cipherTextBrowser->setText(QString::fromStdString(
+        Cipher::toHex( cip.Enc(bytes, k1, k2) )));
 }
-
-
-void MainWindow::o
 
 
 void MainWindow::on_decipherButton_clicked()
 {
+    if (false == QRegExp("^0x[0-9a-fA-F]*$").exactMatch(ui->cipherTextEdit->toPlainText())) {
+        return;
+    }
+
     Cipher cip(
         std::stoull(ui->r1PolyLineEdit->text().toStdString(), nullptr, 16),
         std::stoull(ui->r2PolyLineEdit->text().toStdString(), nullptr, 16),
@@ -122,31 +122,32 @@ void MainWindow::on_decipherButton_clicked()
     uint64_t k1 = std::stoull(ui->decR1SeedLineEdit->text().toStdString(), nullptr, 16);
     uint64_t k2 = std::stoull(ui->decR2SeedLineEdit->text().toStdString(), nullptr, 16);
 
+
     Bytes bytes = Cipher::fromHex(
-            ui->cipherTextEdit->toPlainText().toStdString());
+        ui->cipherTextEdit->toPlainText().toStdString());
 
     bytes = cip.Dec(bytes, k1, k2);
 
     ui->hexPlainTextBrowser_2->setPlainText(
-            QString::fromStdString(Cipher::toHex( bytes )));
+        QString::fromStdString(Cipher::toHex( bytes )));
 
     ui->plainTextBrowser->setPlainText(
-            QString::fromStdString(std::string(bytes.begin(), bytes.end())));
+        QString::fromStdString(std::string(bytes.begin(), bytes.end())));
 }
 
 
 void MainWindow::on_plainTextEdit_textChanged()
 {
     ui->hexPlainTextBrowser->setPlainText(
-            QString::fromStdString(
-                toHex(ui->plainTextEdit->toPlainText().toStdString())));
+        QString::fromStdString(
+            toHex(ui->plainTextEdit->toPlainText().toStdString())));
 }
 
 void MainWindow::on_r1SeedLineEdit_textChanged(const QString &arg1)
 {
     if ((arg1.size() - 2) * 4 > ui->r1LenghtSpinBox->value()) {
         ui->r1SeedLineEdit->setText(
-                "0x" + arg1.right((ui->r1LenghtSpinBox->value() + 3) / 4));
+            "0x" + arg1.right((ui->r1LenghtSpinBox->value() + 3) / 4));
     }
 
     ui->decR1SeedLineEdit->setText(ui->r1SeedLineEdit->text());
@@ -157,7 +158,7 @@ void MainWindow::on_r2SeedLineEdit_textChanged(const QString &arg1)
 {
     if ((arg1.size() - 2) * 4 > ui->r2LenghtSpinBox->value()) {
         ui->r2SeedLineEdit->setText(
-                "0x" + arg1.right((ui->r2LenghtSpinBox->value() + 3) / 4));
+            "0x" + arg1.right((ui->r2LenghtSpinBox->value() + 3) / 4));
     }
 
     ui->decR2SeedLineEdit->setText(ui->r2SeedLineEdit->text());
@@ -166,19 +167,25 @@ void MainWindow::on_r2SeedLineEdit_textChanged(const QString &arg1)
 
 void MainWindow::on_cipherTextBrowser_textChanged()
 {
-    ui->cipherTextEdit->setText(
-            ui->cipherTextBrowser->toPlainText());
+    ui->cipherTextEdit->setText(ui->cipherTextBrowser->toPlainText());
 }
 
-inline std::ostream& colorSpan(std::ostream& ss, const std::string& s)
+inline std::string colorSpan(std::string s)
 {
-    ss << "<span style='color:#8ff0a4;'>" << s << "</span>";
-    return ss;
+    return "<span style='color:#8ff0a4;'>" + s + "</span>";
 }
 
 void MainWindow::on_possibleGammaButton_clicked()
 {
     //int i, k = (ui->lcmLenghtSpinBox->value() + 9) / 10;
+
+    if (QRegExp("^0x[0-9a-fA-F]*$").exactMatch(
+            ui->analysisCipherTextEdit->toPlainText()) == false
+                || QRegExp("^0x[0-9a-fA-F]*$").exactMatch(
+                    ui->analysisPlainTextEdit->toPlainText()) == false )
+    {
+        return;
+    }
 
     ui->possibleGammaBrowser->clear();
 
@@ -207,16 +214,15 @@ void MainWindow::on_possibleGammaButton_clicked()
 
     for (i = 0; i < k; ++i) {
         std::stringstream ss;
-        colorSpan(ss, std::to_string(i + 1)) << ". "
-           << Cipher::toHex( { plain [i] } ) << " 🠖 "
-           << Cipher::toHex( { cipher[i] } )
-           << "\t[ ("; colorSpan(ss, "гамма") << ")";
+        ss << colorSpan(std::to_string(i + 1)) << ". "
+           << Cipher::toHex( { plain [i] } ) << " -> "
+           << Cipher::toHex( { cipher[i] } ) << " "
+           << colorSpan("гамма") << ":";
 
         for (auto &gammas : pullGammas[i]) {
-            ss << " | 0x" << std::hex << std::setfill('0') << std::setw(3)
-               << gammas;
+            ss << " 0x" << std::hex << std::setfill('0') << std::setw(3)
+               << gammas << ";";
         }
-        ss << " ]";
         ui->possibleGammaBrowser->append(QString::fromStdString(ss.str()));
     }
 }
@@ -246,7 +252,7 @@ std::string MainWindow::toPrettyPoly(uint64_t bitPoly, int bitLen)
 {
     std::stringstream prettyPoly;
     constexpr const char* degSpan =
-        "<span style='font-size:16pt;\
+        "<span style='font-size:18pt;\
          font-weight:600;\
          color:#8ff0a4;\
          vertical-align:super;'>";
@@ -259,12 +265,12 @@ std::string MainWindow::toPrettyPoly(uint64_t bitPoly, int bitLen)
 
     while (--deg, deg) {
         if ((bitPoly >>deg) & 1) {
-            prettyPoly << " +" << x << degSpan << deg << endSpan;
+            prettyPoly << " + " << x << degSpan << deg << endSpan;
         }
     }
 
     if ((bitPoly & 1) == 1) {
-        prettyPoly << " +1";
+        prettyPoly << " + 1";
     }
     return prettyPoly.str();
 }
@@ -273,13 +279,13 @@ void MainWindow::on_r1PolyLineEdit_textChanged(const QString &arg1)
 {
     if ((arg1.size() - 2) * 4 > ui->r1LenghtSpinBox->value()) {
         ui->r1PolyLineEdit->setText(
-                "0x" + arg1.right((ui->r1LenghtSpinBox->value() + 3) / 4));
+            "0x" + arg1.right((ui->r1LenghtSpinBox->value() + 3) / 4));
     }
 
     if (ui->r1PolyLineEdit->hasAcceptableInput()) {
-        ui->poly1TextBrowser->setText(QString::fromStdString(
-            toPrettyPoly(std::stoull(ui->r1PolyLineEdit->text().toStdString(), nullptr, 16),
-                ui->r1LenghtSpinBox->value())));
+        ui->poly1TextBrowser->setText(QString::fromStdString(toPrettyPoly(
+            std::stoull(ui->r1PolyLineEdit->text().toStdString(), nullptr, 16),
+            ui->r1LenghtSpinBox->value())));
     }
 }
 
@@ -288,13 +294,13 @@ void MainWindow::on_r2PolyLineEdit_textChanged(const QString &arg1)
 {
     if ((arg1.size() - 2) * 4 > ui->r2LenghtSpinBox->value()) {
         ui->r2PolyLineEdit->setText(
-                "0x" + arg1.right((ui->r2LenghtSpinBox->value() + 3) / 4));
+            "0x" + arg1.right((ui->r2LenghtSpinBox->value() + 3) / 4));
     }
 
     if (ui->r2PolyLineEdit->hasAcceptableInput()) {
-        ui->poly2TextBrowser->setText(QString::fromStdString(
-            toPrettyPoly(std::stoull(ui->r2PolyLineEdit->text().toStdString(), nullptr, 16),
-                ui->r2LenghtSpinBox->value())));
+        ui->poly2TextBrowser->setText(QString::fromStdString(toPrettyPoly(
+            std::stoull(ui->r2PolyLineEdit->text().toStdString(), nullptr, 16),
+            ui->r2LenghtSpinBox->value())));
     }
 }
 
@@ -302,7 +308,7 @@ void MainWindow::on_decR1SeedLineEdit_textChanged(const QString &arg1)
 {
     if ((arg1.size() - 2) * 4 > ui->r1LenghtSpinBox->value()) {
         ui->decR1SeedLineEdit->setText(
-                "0x" + arg1.right((ui->r1LenghtSpinBox->value() + 3) / 4));
+            "0x" + arg1.right((ui->r1LenghtSpinBox->value() + 3) / 4));
     }
 }
 
@@ -311,7 +317,7 @@ void MainWindow::on_decR2SeedLineEdit_textChanged(const QString &arg1)
 {
     if ((arg1.size() - 2) * 4 > ui->r2LenghtSpinBox->value()) {
         ui->decR2SeedLineEdit->setText(
-                "0x" + arg1.right((ui->r2LenghtSpinBox->value() + 3) / 4));
+            "0x" + arg1.right((ui->r2LenghtSpinBox->value() + 3) / 4));
     }
 }
 

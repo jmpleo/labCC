@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <cstdint>
+#include <qvalidator.h>
 #include "cipher.h"
 
 QT_BEGIN_NAMESPACE
