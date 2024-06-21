@@ -244,7 +244,7 @@ std::string MainWindow::hexGenerate(int bitLen)
 {
     std::stringstream ss;
     std::uniform_int_distribution<uint64_t> uDist(0, (1ull << bitLen)-1);
-    ss << "0x" << std::hex << uDist(RND);
+    ss << "0x" << std::hex << ((1 << (bitLen - 1)) | uDist(RND));
     return ss.str();
 }
 
@@ -252,10 +252,11 @@ std::string MainWindow::toPrettyPoly(uint64_t bitPoly, int bitLen)
 {
     std::stringstream prettyPoly;
     constexpr const char* degSpan =
-        "<span style='font-size:18pt;\
-         font-weight:600;\
-         color:#8ff0a4;\
-         vertical-align:super;'>";
+        "<span style='\
+            font-size:18pt;\
+            font-weight:600;\
+            color:#8ff0a4;\
+            vertical-align:super;'>";
     constexpr const char* endSpan = "</span>";
 
     char x = 'x';

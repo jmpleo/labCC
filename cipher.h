@@ -16,6 +16,7 @@ using Bytes = std::vector<uint8_t>;
 class Cipher
 {
 public:
+    Cipher(uint64_t l1, uint64_t l2);
     Cipher(uint64_t poly1, uint64_t poly2, uint64_t l1, uint64_t l2);
     ~Cipher();
 

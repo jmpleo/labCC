@@ -59,6 +59,25 @@ if(QT_VERSION_MAJOR EQUAL 6)
 endif()
 
 
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED ON)
+find_package(Boost REQUIRED COMPONENTS
+    program_options
+    )
+
+if(Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+    link_directories(${Boost_LIBRARY_DIRS})
+endif()
+
+add_executable(
+    task-generation
+    task.cpp
+    cipher.cpp
+    lfsr.cpp
+)
+
+target_link_libraries(task-generation ${Boost_LIBRARIES})
 
 #
 #
