@@ -1,11 +1,22 @@
 
 #include <algorithm>
 #include <boost/program_options.hpp>
+#include <cctype>
 #include <cstddef>
 #include <fstream>
+#include <iostream>
 #include <random>
 #include <sstream>
+#include <string_view>
+#include <vector>
 #include "cipher.h"
+
+
+
+bool isValidUTF8(const std::vector<unsigned char> & data);
+
+std::string textCreate(std::vector<unsigned char> & data);
+
 
 struct TaskGenerator
 {
@@ -84,20 +95,28 @@ int main(int argc, char* argv[])
     ;
 
     po::variables_map options;
-    po::store(po::parse_command_line(argc, argv, desc), options);
 
-    if (options.count("help") or not options.count("input")) {
-        std::cout << desc << std::endl;
-        return 0;
+    try {
+        po::store(po::parse_command_line(argc, argv, desc), options);
+
+        if (options.count("help") or not options.count("input")) {
+            std::cout << desc << std::endl;
+            return 0;
+        }
+
+        const auto l1 = options["l1"].as<std::size_t>();
+        const auto l2 = options["l2"].as<std::size_t>();
+        const auto n = options["n"].as<std::size_t>();
+        const auto leak = options["leak"].as<std::string>();
+        const auto input = options["input"].as<std::string>();
+
+        return TaskGenerator(l1, l2, n, input, leak).run();
+    }
+    catch (...) {
     }
 
-    const auto l1 = options["l1"].as<std::size_t>();
-    const auto l2 = options["l2"].as<std::size_t>();
-    const auto n = options["n"].as<std::size_t>();
-    const auto leak = options["leak"].as<std::string>();
-    const auto input = options["input"].as<std::string>();
-
-    return TaskGenerator(l1, l2, n, input, leak).run();
+    std::cerr << "Неправильно заданы параметры генерации (--help)\n";
+    return -1;
 }
 
 
@@ -110,34 +129,52 @@ int TaskGenerator::run()
     if (not inpFile.is_open()) {
         std::cerr
             << "Не удалось открыть файл с текстом " << input_
+            << std::endl
         ;
         return 1;
     }
 
-    std::string text;
-    std::string buffer;
+    std::vector<unsigned char> data(std::istreambuf_iterator<char>(inpFile), {});
+
+    if (not isValidUTF8(data)) {
+        std::cerr
+            << "Файл не является корректным ASCII UTF-8"
+            << std::endl
+        ;
+
+        return -1;
+    }
+
+    std::string text = textCreate(data);
     std::string leakPlain;
     std::string leakCipher;
     std::stringstream answerCsv;
     std::stringstream taskCsv;
 
-    while (std::getline(inpFile, buffer)) {
-        text += buffer;
-    }
+    std::size_t excerptLen = 400;
 
-    std::size_t plainLen = std::min<std::size_t>(
-        text.length() / n_,
-        500
-    );
+    //while (std::getline(inpFile, buffer)) {
+    //    text += buffer;
+    //}
+
+    if (text.length() / n_ < excerptLen) {
+        std::cerr
+            << "Сборник с открытым текстом слишком мал! "
+            << "Необходим по крайней мере файл с текстом не меньше " << excerptLen * n_ << " символов"
+            << std::endl;
+        return -1;
+    }
+    std::size_t plainLen = std::min(text.length() / n_, excerptLen);
 
     inpFile.close();
 
     answerCsv
-        << "i, k1, k2, plain, plain hex\n"
+        << "i,k1,k2,plain hex,plain\n"
+        //<< "i, k1, k2, plain hex\n"
     ;
 
     taskCsv
-        << "i, r1, r2, l1, l2, cipher hex, leak plain hex, leak cipher hex\n"
+        << "i,r1,r2,l1,l2,cipher hex,leak plain hex,leak cipher hex\n"
     ;
 
     for (std::size_t i = 0; i < n_; ++i) {
@@ -150,16 +187,23 @@ int TaskGenerator::run()
 
         Cipher cip(r1, r2, l1_, l2_);
 
-
-        std::string plain = text.substr(i * plainLen, plainLen);
+        std::string_view plain(text.data() + i * plainLen, plainLen);
 
         answerCsv
             << std::dec << i + 1 << ','
             << "0x" << std::hex << k1 << ','
             << "0x" << std::hex << k2 << ','
-            << plain << ','
-            << Cipher::toHex({plain.begin(), plain.end()}) << '\n'
+            << Cipher::toHex({plain.begin(), plain.end()}) << ','
+            << '"' << plain << '"' << '\n'
         ;
+
+        /* plain enclose
+        for (auto & c : plain) {
+            if (c == '"') answerCsv << '\\';
+            answerCsv << c;
+        } answerCsv << '\n';
+        */
+
 
         taskCsv
             << std::dec << i + 1 << ','
@@ -200,7 +244,7 @@ int TaskGenerator::run()
 
     taskFile << taskCsv.str();
 
-    std::cerr << "Успешно сегенировано " << n_ << " варинатов\n";
+    std::cerr << "Успешно сегенировано " << n_ << " вариантов\n";
 
     return 0;
 }
@@ -214,3 +258,47 @@ std::uint64_t TaskGenerator::gen(std::size_t l)
 }
 
 
+bool isValidUTF8(const std::vector<unsigned char>& data)
+{
+    for (size_t i = 0; i < data.size(); ++i) {
+        if (data[i] <= 0x7F) {
+            // ASCII character, continue
+        } else if (data[i] >= 0xC2 && data[i] <= 0xDF) {
+            // 2-byte sequence
+            if (i + 1 >= data.size() || (data[i + 1] & 0xC0) != 0x80) {
+                return false;
+            }
+            ++i;
+        } else if (data[i] >= 0xE0 && data[i] <= 0xEF) {
+            // 3-byte sequence
+            if (i + 2 >= data.size() || (data[i + 1] & 0xC0) != 0x80 || (data[i + 2] & 0xC0) != 0x80) {
+                return false;
+            }
+            i += 2;
+        } else if (data[i] >= 0xF0 && data[i] <= 0xF4) {
+            // 4-byte sequence
+            if (i + 3 >= data.size() || (data[i + 1] & 0xC0) != 0x80 || (data[i + 2] & 0xC0) != 0x80 || (data[i + 3] & 0xC0) != 0x80) {
+                return false;
+            }
+            i += 3;
+        } else {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+std::string textCreate(std::vector<unsigned char> & data)
+{
+    std::string text;
+
+    for (auto c : data) if (
+        std::isalpha(c) or std::isdigit(c) or std::ispunct(c) or c == ' '
+    )
+    {
+        text.push_back(c);
+    }
+
+    return text;
+}

@@ -4,7 +4,6 @@
 
 #include <QDebug>
 #include <algorithm>
-#include <complex>
 #include <cstddef>
 #include <cstdint>
 #include <iomanip>
@@ -22,15 +21,11 @@
 #include <random>
 #include <sstream>
 #include <string>
-#include <type_traits>
-#include <unordered_map>
 #include <vector>
 
 using cipher::Cipher;
 using cipher::Bytes;
 using cipher::Byte;
-
-static std::random_device RND;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -229,22 +224,26 @@ void MainWindow::on_possibleGammaButton_clicked()
 
 std::string MainWindow::toHex(const std::string &plainText)
 {
-    std::stringstream ss;
-    ss << "0x" << std::hex << std::setfill('0');
+    //std::stringstream ss;
+    //ss << "0x" << std::hex << std::setfill('0');
 
-    for (auto ch : plainText) {
-        ss << std::setw(2)
-           << static_cast <unsigned int> (
-                static_cast<unsigned char> (ch));
-    }
-    return ss.str();
+    //Cipher::toHex({plainText.begin(), plainText.end()});
+
+    //for (auto ch : plainText) {
+    //    ss << std::setw(2)
+    //       << static_cast <unsigned int> (static_cast<unsigned char> (ch));
+    //}
+
+    return Cipher::toHex({plainText.begin(), plainText.end()});
+    //return ss.str();
 }
 
-std::string MainWindow::hexGenerate(int bitLen)
+std::string MainWindow::hexGenerate(int l)
 {
+    static std::random_device d;
+    std::uniform_int_distribution<std::uint64_t> u(1, (1ull << l) - 1);
     std::stringstream ss;
-    std::uniform_int_distribution<uint64_t> uDist(0, (1ull << bitLen)-1);
-    ss << "0x" << std::hex << ((1 << (bitLen - 1)) | uDist(RND));
+    ss << "0x" << std::hex << u(d);
     return ss.str();
 }
 
