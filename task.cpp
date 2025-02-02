@@ -169,8 +169,8 @@ int TaskGenerator::run()
     inpFile.close();
 
     answerCsv
-        << "i,k1,k2,plain hex,plain\n"
-        //<< "i, k1, k2, plain hex\n"
+        //<< "i,k1,k2,plain hex,plain\n"
+        << "i, k1, k2, plain hex\n"
     ;
 
     taskCsv
@@ -193,8 +193,8 @@ int TaskGenerator::run()
             << std::dec << i + 1 << ','
             << "0x" << std::hex << k1 << ','
             << "0x" << std::hex << k2 << ','
-            << Cipher::toHex({plain.begin(), plain.end()}) << ','
-            << '"' << plain << '"' << '\n'
+            << Cipher::toHex({plain.begin(), plain.end()}) << '\n'
+            //<< '"' << plain << '"' << '\n'
         ;
 
         /* plain enclose

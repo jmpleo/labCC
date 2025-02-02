@@ -131,6 +131,26 @@ void MainWindow::on_decipherButton_clicked()
 }
 
 
+void MainWindow::on_toolTextEdit_textChanged()
+{
+    if (not ui->toolTextEdit->toPlainText().isEmpty()) {
+        ui->toolHexPlainTextBrowser->setPlainText(
+            QString::fromStdString(
+                toHex(ui->toolTextEdit->toPlainText().toStdString())));
+    }
+}
+
+
+void MainWindow::on_toolHexEdit_textChanged()
+{
+    if (not ui->toolHexEdit->toPlainText().isEmpty()) {
+        auto bytes = Cipher::fromHex(ui->toolHexEdit->toPlainText().toStdString());
+        ui->toolPlainTextBrowser->setPlainText(
+           QString::fromStdString(std::string(bytes.begin(), bytes.end())));
+    }
+}
+
+
 void MainWindow::on_plainTextEdit_textChanged()
 {
     ui->hexPlainTextBrowser->setPlainText(

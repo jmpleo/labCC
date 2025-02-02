@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <iomanip>
+#include <iostream>
 #include <sstream>
 #include <vector>
 
@@ -130,7 +131,6 @@ std::string Cipher::toHex(Bytes bytes)
 {
     std::stringstream ss;
     ss << "0x" << std::hex << std::setfill('0');
-
     for (Byte &byte : bytes) {
         ss << std::setw(2)
            << static_cast<unsigned int>( byte );

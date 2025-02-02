@@ -33,6 +33,10 @@ private slots:
 
     void on_plainTextEdit_textChanged();
 
+    void on_toolTextEdit_textChanged();
+
+    void on_toolHexEdit_textChanged();
+
     void on_r1SeedLineEdit_textChanged(const QString &arg1);
 
     void on_r2SeedLineEdit_textChanged(const QString &arg1);
