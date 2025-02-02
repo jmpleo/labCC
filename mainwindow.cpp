@@ -143,7 +143,7 @@ void MainWindow::on_toolTextEdit_textChanged()
 
 void MainWindow::on_toolHexEdit_textChanged()
 {
-    if (not ui->toolHexEdit->toPlainText().isEmpty()) {
+    if (QRegExp("^0x[0-9a-fA-F]*$").exactMatch(ui->toolHexEdit->toPlainText())) {
         auto bytes = Cipher::fromHex(ui->toolHexEdit->toPlainText().toStdString());
         ui->toolPlainTextBrowser->setPlainText(
            QString::fromStdString(std::string(bytes.begin(), bytes.end())));
